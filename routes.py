@@ -211,50 +211,64 @@ def register_routes(app):
     # Balance Report route
     @app.route('/balance_report')
     def balance_report():
-        # Calculate balance for each product in each location
-        # This is a complex query that calculates net balance per product per location
-        
-        # Get all movements that bring items INTO locations (to_location is not null)
-        incoming = db.session.query(
+        # Simplified approach: Calculate balance by aggregating movements directly
+        # Get incoming quantities (movements TO locations)
+        incoming_movements = db.session.query(
             ProductMovement.product_id,
             ProductMovement.to_location.label('location_id'),
-            func.sum(ProductMovement.qty).label('incoming_qty')
+            func.sum(ProductMovement.qty).label('total_incoming')
         ).filter(
             ProductMovement.to_location.isnot(None)
         ).group_by(
             ProductMovement.product_id,
             ProductMovement.to_location
-        ).subquery()
+        ).all()
         
-        # Get all movements that take items OUT of locations (from_location is not null)
-        outgoing = db.session.query(
+        # Get outgoing quantities (movements FROM locations)
+        outgoing_movements = db.session.query(
             ProductMovement.product_id,
             ProductMovement.from_location.label('location_id'),
-            func.sum(ProductMovement.qty).label('outgoing_qty')
+            func.sum(ProductMovement.qty).label('total_outgoing')
         ).filter(
             ProductMovement.from_location.isnot(None)
         ).group_by(
             ProductMovement.product_id,
             ProductMovement.from_location
-        ).subquery()
-        
-        # Calculate net balance by combining incoming and outgoing
-        balance_query = db.session.query(
-            Product.product_id,
-            Product.name.label('product_name'),
-            Location.location_id,
-            Location.name.label('location_name'),
-            (func.coalesce(incoming.c.incoming_qty, 0) - func.coalesce(outgoing.c.outgoing_qty, 0)).label('balance')
-        ).select_from(Product).join(
-            Location, True  # Cross join to get all product-location combinations
-        ).outerjoin(
-            incoming, (incoming.c.product_id == Product.product_id) & (incoming.c.location_id == Location.location_id)
-        ).outerjoin(
-            outgoing, (outgoing.c.product_id == Product.product_id) & (outgoing.c.location_id == Location.location_id)
-        ).filter(
-            func.coalesce(incoming.c.incoming_qty, 0) - func.coalesce(outgoing.c.outgoing_qty, 0) != 0
-        ).order_by(
-            Product.product_id, Location.location_id
         ).all()
         
-        return render_template('balance_report.html', balance_data=balance_query)
+        # Calculate net balances
+        balance_dict = {}
+        
+        # Add incoming quantities
+        for movement in incoming_movements:
+            key = (movement.product_id, movement.location_id)
+            if key not in balance_dict:
+                balance_dict[key] = 0
+            balance_dict[key] += movement.total_incoming
+        
+        # Subtract outgoing quantities
+        for movement in outgoing_movements:
+            key = (movement.product_id, movement.location_id)
+            if key not in balance_dict:
+                balance_dict[key] = 0
+            balance_dict[key] -= movement.total_outgoing
+        
+        # Create final result with product and location names
+        balance_data = []
+        for (product_id, location_id), balance in balance_dict.items():
+            if balance != 0:  # Only show non-zero balances
+                product = Product.query.get(product_id)
+                location = Location.query.get(location_id)
+                if product and location:
+                    balance_data.append({
+                        'product_id': product_id,
+                        'product_name': product.name,
+                        'location_id': location_id,
+                        'location_name': location.name,
+                        'balance': balance
+                    })
+        
+        # Sort by product_id, then location_id
+        balance_data.sort(key=lambda x: (x['product_id'], x['location_id']))
+        
+        return render_template('balance_report.html', balance_data=balance_data)
