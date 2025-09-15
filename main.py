@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from flask_wtf.csrf import CSRFProtect
 from database import db
 
 # create the app
@@ -14,6 +15,8 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 }
 # initialize the app with the extension, flask-sqlalchemy >= 3.0.x
 db.init_app(app)
+# Initialize CSRF protection
+csrf = CSRFProtect(app)
 
 with app.app_context():
     # Make sure to import the models here or their tables won't be created
