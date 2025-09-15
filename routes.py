@@ -58,6 +58,21 @@ def register_routes(app):
         movements = ProductMovement.query.filter_by(product_id=product_id).order_by(ProductMovement.timestamp.desc()).all()
         return render_template('view_product.html', product=product, movements=movements)
 
+    @app.route('/products/delete/<product_id>', methods=['POST'])
+    def delete_product(product_id):
+        product = Product.query.get_or_404(product_id)
+        
+        # Check if there are any movements for this product
+        movement_count = ProductMovement.query.filter_by(product_id=product_id).count()
+        if movement_count > 0:
+            flash(f'Cannot delete product "{product.name}" because it has {movement_count} movement(s) associated with it.', 'error')
+            return redirect(url_for('view_product', product_id=product_id))
+        
+        db.session.delete(product)
+        db.session.commit()
+        flash(f'Product "{product.name}" has been deleted successfully!', 'success')
+        return redirect(url_for('products'))
+
     # Location routes
     @app.route('/locations')
     def locations():
@@ -105,6 +120,24 @@ def register_routes(app):
         movements_from = ProductMovement.query.filter_by(from_location=location_id).order_by(ProductMovement.timestamp.desc()).all()
         movements_to = ProductMovement.query.filter_by(to_location=location_id).order_by(ProductMovement.timestamp.desc()).all()
         return render_template('view_location.html', location=location, movements_from=movements_from, movements_to=movements_to)
+
+    @app.route('/locations/delete/<location_id>', methods=['POST'])
+    def delete_location(location_id):
+        location = Location.query.get_or_404(location_id)
+        
+        # Check if there are any movements for this location
+        movement_count_from = ProductMovement.query.filter_by(from_location=location_id).count()
+        movement_count_to = ProductMovement.query.filter_by(to_location=location_id).count()
+        total_movements = movement_count_from + movement_count_to
+        
+        if total_movements > 0:
+            flash(f'Cannot delete location "{location.name}" because it has {total_movements} movement(s) associated with it.', 'error')
+            return redirect(url_for('view_location', location_id=location_id))
+        
+        db.session.delete(location)
+        db.session.commit()
+        flash(f'Location "{location.name}" has been deleted successfully!', 'success')
+        return redirect(url_for('locations'))
 
     # Movement routes
     @app.route('/movements')
@@ -165,6 +198,15 @@ def register_routes(app):
     def view_movement(movement_id):
         movement = ProductMovement.query.get_or_404(movement_id)
         return render_template('view_movement.html', movement=movement)
+
+    @app.route('/movements/delete/<movement_id>', methods=['POST'])
+    def delete_movement(movement_id):
+        movement = ProductMovement.query.get_or_404(movement_id)
+        
+        db.session.delete(movement)
+        db.session.commit()
+        flash(f'Movement "{movement.movement_id}" has been deleted successfully!', 'success')
+        return redirect(url_for('movements'))
 
     # Balance Report route
     @app.route('/balance_report')
