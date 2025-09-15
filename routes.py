@@ -9,7 +9,22 @@ def register_routes(app):
 
     @app.route('/')
     def index():
-        return render_template('index.html')
+        # Get counts for dashboard stats
+        product_count = Product.query.count()
+        location_count = Location.query.count()
+        movement_count = ProductMovement.query.count()
+        
+        # Count active stock (non-zero balances)
+        balance_count = 0
+        # Simple count of distinct product-location combinations with movements
+        from sqlalchemy import distinct
+        balance_count = db.session.query(distinct(ProductMovement.product_id)).count()
+        
+        return render_template('index.html', 
+                             product_count=product_count,
+                             location_count=location_count,
+                             movement_count=movement_count,
+                             balance_count=balance_count)
 
     # Product routes
     @app.route('/products')

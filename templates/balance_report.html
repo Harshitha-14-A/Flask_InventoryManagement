@@ -3,31 +3,247 @@
 {% block title %}Balance Report - Inventory Management{% endblock %}
 
 {% block content %}
-<h2>Balance Report</h2>
-<p class="text-muted">Current inventory balance by product and location</p>
-
-<div class="table-responsive">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Warehouse</th>
-                <th>Qty</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in balance_data %}
-            <tr>
-                <td>{{ row.product_name }} ({{ row.product_id }})</td>
-                <td>{{ row.location_name }} ({{ row.location_id }})</td>
-                <td>{{ row.balance }}</td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="3" class="text-center">No inventory data found</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">
+            <i class="fas fa-chart-bar text-info me-2"></i>
+            Inventory Balance Report
+        </h2>
+        <p class="text-muted mb-0">Real-time inventory levels across all locations</p>
+    </div>
+    <div class="btn-group">
+        <button class="btn btn-outline-primary" onclick="exportReport()">
+            <i class="fas fa-download me-2"></i>Export
+        </button>
+        <button class="btn btn-outline-secondary" onclick="printReport()">
+            <i class="fas fa-print me-2"></i>Print
+        </button>
+    </div>
 </div>
+
+<!-- Summary Cards -->
+<div class="row mb-4 g-3">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-boxes fa-2x mb-2"></i>
+                <h4>{{ balance_data|length }}</h4>
+                <small>Active Stock Items</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-arrow-up fa-2x mb-2"></i>
+                <h4>{{ positive_count or 0 }}</h4>
+                <small>Positive Balances</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-arrow-down fa-2x mb-2"></i>
+                <h4>{{ negative_count or 0 }}</h4>
+                <small>Negative Balances</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-calculator fa-2x mb-2"></i>
+                <h4>{{ total_units or 0 }}</h4>
+                <small>Total Units</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="balanceSearch" class="form-control" placeholder="Search by product or location...">
+        </div>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" id="balanceFilter">
+            <option value="">All Balances</option>
+            <option value="positive">Positive Only</option>
+            <option value="negative">Negative Only</option>
+            <option value="zero">Zero Only</option>
+        </select>
+    </div>
+    <div class="col-md-3 text-end">
+        <span class="badge bg-info fs-6">{{ balance_data|length }} Records</span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive" id="reportTable">
+        <table class="table table-hover mb-0" id="balanceTable">
+            <thead>
+                <tr>
+                    <th>
+                        <i class="fas fa-cube me-2"></i>Product
+                    </th>
+                    <th>
+                        <i class="fas fa-warehouse me-2"></i>Warehouse
+                    </th>
+                    <th>
+                        <i class="fas fa-boxes me-2"></i>Quantity
+                    </th>
+                    <th>
+                        <i class="fas fa-chart-line me-2"></i>Status
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in balance_data %}
+                <tr data-balance="{{ row.balance }}">
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary bg-opacity-10 rounded p-2 me-3">
+                                <i class="fas fa-cube text-primary"></i>
+                            </div>
+                            <div>
+                                <div class="fw-medium">{{ row.product_name }}</div>
+                                <small class="text-muted">ID: {{ row.product_id }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-success bg-opacity-10 rounded p-2 me-3">
+                                <i class="fas fa-warehouse text-success"></i>
+                            </div>
+                            <div>
+                                <div class="fw-medium">{{ row.location_name }}</div>
+                                <small class="text-muted">ID: {{ row.location_id }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="fs-5 fw-bold {% if row.balance > 0 %}text-success{% elif row.balance < 0 %}text-danger{% else %}text-muted{% endif %}">
+                            {{ row.balance }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if row.balance > 0 %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-check me-1"></i>In Stock
+                            </span>
+                        {% elif row.balance < 0 %}
+                            <span class="badge bg-danger">
+                                <i class="fas fa-exclamation-triangle me-1"></i>Oversold
+                            </span>
+                        {% else %}
+                            <span class="badge bg-secondary">
+                                <i class="fas fa-minus me-1"></i>Empty
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="text-center py-5">
+                        <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                        <br>
+                        <span class="text-muted">No inventory data found. Start by <a href="{{ url_for('add_movement') }}">recording some movements</a></span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Initialize search functionality
+    searchTable('balanceSearch', 'balanceTable');
+    
+    // Filter functionality
+    document.getElementById('balanceFilter').addEventListener('change', function() {
+        const filter = this.value;
+        const rows = document.querySelectorAll('#balanceTable tbody tr');
+        
+        rows.forEach(row => {
+            const balance = parseFloat(row.getAttribute('data-balance'));
+            let show = true;
+            
+            switch(filter) {
+                case 'positive':
+                    show = balance > 0;
+                    break;
+                case 'negative':
+                    show = balance < 0;
+                    break;
+                case 'zero':
+                    show = balance === 0;
+                    break;
+            }
+            
+            row.style.display = show ? '' : 'none';
+        });
+    });
+    
+    // Export functionality
+    function exportReport() {
+        // Simple CSV export
+        let csv = 'Product,Product ID,Warehouse,Location ID,Quantity,Status\n';
+        
+        document.querySelectorAll('#balanceTable tbody tr[data-balance]').forEach(row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length >= 4) {
+                const productName = cells[0].querySelector('.fw-medium').textContent;
+                const productId = cells[0].querySelector('.text-muted').textContent.replace('ID: ', '');
+                const locationName = cells[1].querySelector('.fw-medium').textContent;
+                const locationId = cells[1].querySelector('.text-muted').textContent.replace('ID: ', '');
+                const quantity = cells[2].querySelector('.fw-bold').textContent.trim();
+                const status = cells[3].querySelector('.badge').textContent.trim();
+                
+                csv += `"${productName}","${productId}","${locationName}","${locationId}","${quantity}","${status}"\n`;
+            }
+        });
+        
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'inventory_balance_report.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    }
+    
+    // Print functionality
+    function printReport() {
+        window.print();
+    }
+    
+    // Calculate summary stats
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('#balanceTable tbody tr[data-balance]');
+        let positive = 0, negative = 0, total = 0;
+        
+        rows.forEach(row => {
+            const balance = parseFloat(row.getAttribute('data-balance'));
+            if (balance > 0) positive++;
+            else if (balance < 0) negative++;
+            total += Math.abs(balance);
+        });
+        
+        // Update summary cards if needed
+    });
+</script>
+
+<style>
+    @media print {
+        .btn-group, .search-box, .form-select, .badge {
+            display: none !important;
+        }
+    }
+</style>
 {% endblock %}
