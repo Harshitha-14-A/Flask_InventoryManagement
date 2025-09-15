@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Movement Details - Inventory Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Movement Details</h2>
+    <div>
+        <a href="{{ url_for('edit_movement', movement_id=movement.movement_id) }}" class="btn btn-warning">Edit</a>
+        <a href="{{ url_for('movements') }}" class="btn btn-secondary">Back to Movements</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Movement {{ movement.movement_id }}</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <p class="card-text"><strong>Product:</strong> {{ movement.product.name }} ({{ movement.product.product_id }})</p>
+                <p class="card-text"><strong>Quantity:</strong> {{ movement.qty }}</p>
+                <p class="card-text"><strong>Timestamp:</strong> {{ movement.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            </div>
+            <div class="col-md-6">
+                <p class="card-text"><strong>From Location:</strong> {{ movement.from_loc.name if movement.from_loc else 'External' }}</p>
+                <p class="card-text"><strong>To Location:</strong> {{ movement.to_loc.name if movement.to_loc else 'External' }}</p>
+            </div>
+        </div>
+        
+        {% if movement.from_loc and movement.to_loc %}
+            <div class="alert alert-info mt-3">
+                <strong>Movement Type:</strong> Transfer from {{ movement.from_loc.name }} to {{ movement.to_loc.name }}
+            </div>
+        {% elif movement.to_loc %}
+            <div class="alert alert-success mt-3">
+                <strong>Movement Type:</strong> Incoming stock to {{ movement.to_loc.name }}
+            </div>
+        {% elif movement.from_loc %}
+            <div class="alert alert-warning mt-3">
+                <strong>Movement Type:</strong> Outgoing stock from {{ movement.from_loc.name }}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

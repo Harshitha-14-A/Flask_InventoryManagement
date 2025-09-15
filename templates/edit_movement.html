@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Movement - Inventory Management{% endblock %}
+
+{% block content %}
+<h2>Edit Movement: {{ movement.movement_id }}</h2>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+    
+    <div class="mb-3">
+        <label class="form-label">Movement ID</label>
+        <input type="text" class="form-control" value="{{ movement.movement_id }}" disabled>
+        <small class="text-muted">Movement ID cannot be changed</small>
+    </div>
+    
+    <div class="mb-3">
+        {{ form.product_id.label(class="form-label") }}
+        {{ form.product_id(class="form-control") }}
+        {% for error in form.product_id.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    
+    <div class="mb-3">
+        {{ form.from_location.label(class="form-label") }}
+        {{ form.from_location(class="form-control") }}
+        {% for error in form.from_location.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    
+    <div class="mb-3">
+        {{ form.to_location.label(class="form-label") }}
+        {{ form.to_location(class="form-control") }}
+        {% for error in form.to_location.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    
+    <div class="mb-3">
+        {{ form.qty.label(class="form-label") }}
+        {{ form.qty(class="form-control") }}
+        {% for error in form.qty.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    
+    <p class="text-muted">Note: At least one location (From or To) must be specified.</p>
+    
+    <button type="submit" class="btn btn-warning">Update Movement</button>
+    <a href="{{ url_for('movements') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
