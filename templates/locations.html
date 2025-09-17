@@ -16,7 +16,6 @@
     </a>
 </div>
 
-<!-- Search and Filter -->
 <div class="row mb-4">
     <div class="col-md-6">
         <div class="search-box">
@@ -91,7 +90,6 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -120,10 +118,8 @@
 </div>
 
 <script>
-    // Initialize search functionality
     searchTable('locationSearch', 'locationsTable');
     
-    // Delete location function
     function deleteLocation(locationId, locationName) {
         document.getElementById('locationName').textContent = locationName;
         document.getElementById('deleteForm').action = `/locations/delete/${locationId}`;

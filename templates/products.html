@@ -16,7 +16,6 @@
     </a>
 </div>
 
-<!-- Search and Filter -->
 <div class="row mb-4">
     <div class="col-md-6">
         <div class="search-box">
@@ -88,7 +87,6 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -117,10 +115,8 @@
 </div>
 
 <script>
-    // Initialize search functionality
     searchTable('productSearch', 'productsTable');
     
-    // Delete product function
     function deleteProduct(productId, productName) {
         document.getElementById('productName').textContent = productName;
         document.getElementById('deleteForm').action = `/products/delete/${productId}`;

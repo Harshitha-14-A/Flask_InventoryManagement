@@ -21,7 +21,6 @@
     </div>
 </div>
 
-<!-- Summary Cards -->
 <div class="row mb-4 g-3">
     <div class="col-md-3">
         <div class="card bg-primary text-white">
@@ -36,7 +35,7 @@
         <div class="card bg-success text-white">
             <div class="card-body text-center">
                 <i class="fas fa-arrow-up fa-2x mb-2"></i>
-                <h4>{{ positive_count or 0 }}</h4>
+                <h4>{{ positive_balances or 0 }}</h4>
                 <small>Positive Balances</small>
             </div>
         </div>
@@ -45,7 +44,7 @@
         <div class="card bg-warning text-white">
             <div class="card-body text-center">
                 <i class="fas fa-arrow-down fa-2x mb-2"></i>
-                <h4>{{ negative_count or 0 }}</h4>
+                <h4>{{ negative_balances or 0 }}</h4>
                 <small>Negative Balances</small>
             </div>
         </div>
@@ -61,7 +60,6 @@
     </div>
 </div>
 
-<!-- Search and Filter -->
 <div class="row mb-4">
     <div class="col-md-6">
         <div class="search-box">
@@ -130,6 +128,9 @@
                         <span class="fs-5 fw-bold {% if row.balance > 0 %}text-success{% elif row.balance < 0 %}text-danger{% else %}text-muted{% endif %}">
                             {{ row.balance }}
                         </span>
+                        {% if row.last_updated %}
+                        <br><small class="text-muted">Updated: {{ row.last_updated.strftime('%Y-%m-%d %H:%M') }}</small>
+                        {% endif %}
                     </td>
                     <td>
                         {% if row.balance > 0 %}
@@ -162,10 +163,8 @@
 </div>
 
 <script>
-    // Initialize search functionality
     searchTable('balanceSearch', 'balanceTable');
     
-    // Filter functionality
     document.getElementById('balanceFilter').addEventListener('change', function() {
         const filter = this.value;
         const rows = document.querySelectorAll('#balanceTable tbody tr');
@@ -190,9 +189,7 @@
         });
     });
     
-    // Export functionality
     function exportReport() {
-        // Simple CSV export
         let csv = 'Product,Product ID,Warehouse,Location ID,Quantity,Status\n';
         
         document.querySelectorAll('#balanceTable tbody tr[data-balance]').forEach(row => {
@@ -218,12 +215,10 @@
         window.URL.revokeObjectURL(url);
     }
     
-    // Print functionality
     function printReport() {
         window.print();
     }
     
-    // Calculate summary stats
     document.addEventListener('DOMContentLoaded', function() {
         const rows = document.querySelectorAll('#balanceTable tbody tr[data-balance]');
         let positive = 0, negative = 0, total = 0;
@@ -235,7 +230,6 @@
             total += Math.abs(balance);
         });
         
-        // Update summary cards if needed
     });
 </script>
 

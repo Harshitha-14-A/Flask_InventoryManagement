@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, IntegerField, SelectField, DateTimeField
+from wtforms import StringField, TextAreaField, IntegerField, SelectField
 from wtforms.validators import DataRequired, Length, NumberRange
 from models import Product, Location
 
@@ -25,11 +25,9 @@ class ProductMovementForm(FlaskForm):
     
     def __init__(self, *args, **kwargs):
         super(ProductMovementForm, self).__init__(*args, **kwargs)
-        # Set choices for product dropdown
         products = Product.query.all()
         self.product_id.choices = [(p.product_id, f"{p.product_id} - {p.name}") for p in products]
         
-        # Set choices for location dropdowns
         locations = Location.query.all()
         location_choices = [('', 'Select Location')] + [(l.location_id, f"{l.location_id} - {l.name}") for l in locations]
         self.from_location.choices = location_choices
