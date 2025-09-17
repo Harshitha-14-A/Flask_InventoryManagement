@@ -49,11 +49,6 @@ A comprehensive inventory management system built with Flask, featuring real-tim
    cd Flask_InventoryManagement
    ```
 
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
 3. **Database Setup**
    - Create a MySQL database named `inventory_management`
    - Update database connection in `main.py` or set environment variable:
@@ -65,32 +60,12 @@ A comprehensive inventory management system built with Flask, featuring real-tim
    ```bash
    python main.py
    ```
-   Or use the batch file on Windows:
-   ```bash
-   run_app.bat
-   ```
 
 5. **Access the application**
    - Web Interface: http://localhost:5000
    - API Documentation: See API Endpoints section below
 
-## Usage Guide
 
-### Getting Started
-1. **Add Products**: Create your product catalog with unique IDs and descriptions
-2. **Set up Locations**: Define your warehouse locations and storage areas
-3. **Record Movements**: Track inventory movements to maintain accurate stock levels
-
-### Movement Types
-- **Incoming Stock**: Leave "From Location" empty, specify "To Location"
-- **Outgoing Stock**: Specify "From Location", leave "To Location" empty
-- **Transfers**: Specify both "From Location" and "To Location"
-
-### Stock Validation
-The system automatically validates stock availability:
-- Prevents negative stock levels
-- Shows current balance before movements
-- Provides clear error messages for insufficient stock
 
 
 
