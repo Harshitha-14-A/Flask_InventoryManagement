@@ -4,47 +4,96 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Product Movements</h2>
-    <a href="{{ url_for('add_movement') }}" class="btn btn-success">Add Movement</a>
+    <div>
+        <h2 class="fw-bold mb-1">
+            <i class="fas fa-exchange-alt text-warning me-2"></i>
+            Product Movements
+        </h2>
+        <p class="text-muted mb-0">Track all inventory movements and transfers</p>
+    </div>
+    <a href="{{ url_for('add_movement') }}" class="btn btn-success">
+        <i class="fas fa-plus me-2"></i>Add Movement
+    </a>
 </div>
 
-<div class="table-responsive">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Movement ID</th>
-                <th>Product</th>
-                <th>From Location</th>
-                <th>To Location</th>
-                <th>Quantity</th>
-                <th>Timestamp</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for movement in movements %}
-            <tr>
-                <td>{{ movement.movement_id }}</td>
-                <td>{{ movement.product.name }}</td>
-                <td>{{ movement.from_loc.name if movement.from_loc else '-' }}</td>
-                <td>{{ movement.to_loc.name if movement.to_loc else '-' }}</td>
-                <td>{{ movement.qty }}</td>
-                <td>{{ movement.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
-                <td>
-                    <a href="{{ url_for('view_movement', movement_id=movement.movement_id) }}" class="btn btn-sm btn-info">View</a>
-                    <a href="{{ url_for('edit_movement', movement_id=movement.movement_id) }}" class="btn btn-sm btn-warning">Edit</a>
-                    <form method="POST" action="{{ url_for('delete_movement', movement_id=movement.movement_id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this movement?')">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="7" class="text-center">No movements found</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="movementSearch" class="form-control" placeholder="Search movements by ID, product, or location...">
+        </div>
+    </div>
+    <div class="col-md-6 text-end">
+        <span class="badge bg-warning fs-6">{{ movements|length }} Movements</span>
+    </div>
 </div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header fw-bold">Movement List</div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="movementsTable">
+                <thead>
+                    <tr>
+                        <th>Movement ID</th>
+                        <th>Product</th>
+                        <th>From Location</th>
+                        <th>To Location</th>
+                        <th>Quantity</th>
+                        <th>Timestamp</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for movement in movements %}
+                    <tr>
+                        <td>{{ movement.movement_id }}</td>
+                        <td>{{ movement.product.name }}</td>
+                        <td>{{ movement.from_loc.name if movement.from_loc else '-' }}</td>
+                        <td>{{ movement.to_loc.name if movement.to_loc else '-' }}</td>
+                        <td>{{ movement.qty }}</td>
+                        <td>{{ movement.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>
+                            <a href="{{ url_for('view_movement', movement_id=movement.movement_id) }}" class="btn btn-sm btn-info">View</a>
+                            <a href="{{ url_for('edit_movement', movement_id=movement.movement_id) }}" class="btn btn-sm btn-warning">Edit</a>
+                            <form method="POST" action="{{ url_for('delete_movement', movement_id=movement.movement_id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this movement?')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center">No movements found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+    integrity="sha256-pv1yXQ+0p+v+0b+g6k5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q5Q="
+    crossorigin=""></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    integrity="sha256-sA+e2b+e2b+e2b+e2b+e2b+e2b+e2b+e2b+e2b+e2b+e2b="
+    crossorigin=""/>
+
+<script>
+    document.getElementById("movementSearch").addEventListener("input", function () {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll("#movementsTable tbody tr");
+
+        rows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+          row.style.display = text.includes(filter) ? "" : "none";
+        });
+      });
+
+    
+</script>
 {% endblock %}

@@ -6,17 +6,17 @@ A comprehensive inventory management system built with Flask, featuring real-tim
 
 ### Core Functionality
 - **Home Page**:
-![alt text](image.png)
+![alt text](<image1.png>)
 - **Product Management**: Add, edit, view, and delete products
-![alt text](image-1.png)
+![alt text](image.png)
 - **Location Management**: Manage warehouse locations and storage areas
-![alt text](image-2.png)
+![alt text](image-1.png)
 - **Movement Tracking**: Record product movements in, out, and between locations
-![alt text](image-3.png)
+![alt text](image-2.png)
 - **Real-time Balance Tracking**: Automatic stock balance calculation and validation
-![alt text](image-4.png)
+![alt text](image-3.png)
 - **Balance Reporting**: Comprehensive inventory reports with current stock levels
-![alt text](image-5.png)
+![alt text](image-4.png)
 
 ### Advanced Features
 - **Stock Validation**: Prevents overselling with real-time stock checks

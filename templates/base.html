@@ -9,14 +9,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #4f46e5;
-            --secondary-color: #06b6d4;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
-            --dark-color: #1f2937;
-            --light-color: #f8fafc;
-            --border-color: #e5e7eb;
+            --primary-color: #8B4513; /* brown */
+            --secondary-color: #FFD700; /* gold/yellow */
+            --success-color: #A0522D; /* sienna */
+            --warning-color: #FFB347; /* light orange */
+            --danger-color: #CD5C5C; /* indian red */
+            --dark-color: #5C4033; /* dark brown */
+            --light-color: #FFF8DC; /* cornsilk */
+            --border-color: #DEB887; /* burlywood */
         }
         
         * {
@@ -25,7 +25,7 @@
         
         body {
             background-color: var(--light-color);
-            color: #374151;
+            color: #5C4033;
         }
         
         .navbar {
@@ -37,16 +37,19 @@
         .navbar-brand {
             font-weight: 700;
             font-size: 1.5rem;
+            color: var(--dark-color);
         }
         
         .nav-link {
             font-weight: 500;
             transition: all 0.3s ease;
             position: relative;
+            color: var(--dark-color);
         }
         
         .nav-link:hover {
             transform: translateY(-2px);
+            color: var(--primary-color);
         }
         
         .nav-link.active::after {
@@ -57,20 +60,21 @@
             transform: translateX(-50%);
             width: 20px;
             height: 3px;
-            background: white;
+            background: var(--primary-color);
             border-radius: 2px;
         }
         
         .card {
             border: none;
             border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 6px -1px rgba(139, 69, 19, 0.3), 0 2px 4px -1px rgba(210, 180, 140, 0.3);
             transition: all 0.3s ease;
+            background-color: var(--light-color);
         }
         
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 20px 25px -5px rgba(139, 69, 19, 0.4), 0 10px 10px -5px rgba(210, 180, 140, 0.4);
         }
         
         .btn {
@@ -78,38 +82,45 @@
             font-weight: 500;
             transition: all 0.3s ease;
             border: none;
+            color: var(--dark-color);
         }
         
         .btn:hover {
             transform: translateY(-2px);
+            color: var(--primary-color);
         }
         
         .btn-primary {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--dark-color);
         }
         
         .btn-success {
             background: var(--success-color);
+            color: var(--light-color);
         }
         
         .btn-warning {
             background: var(--warning-color);
+            color: var(--dark-color);
         }
         
         .btn-danger {
             background: var(--danger-color);
+            color: var(--light-color);
         }
         
         .table {
-            background: white;
+            background: var(--light-color);
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(139, 69, 19, 0.3);
+            color: var(--dark-color);
         }
         
         .table thead th {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
+            color: var(--dark-color);
             font-weight: 600;
             border: none;
             padding: 1rem;
@@ -120,7 +131,7 @@
         }
         
         .table tbody tr:hover {
-            background-color: #f8fafc;
+            background-color: #FFF5E1;
             transform: scale(1.02);
         }
         
@@ -133,22 +144,28 @@
             border: none;
             border-radius: 12px;
             font-weight: 500;
+            color: var(--dark-color);
+            background-color: #FFF5E1;
         }
         
         .form-control, .form-select {
             border-radius: 12px;
             border: 2px solid var(--border-color);
             transition: all 0.3s ease;
+            color: var(--dark-color);
+            background-color: var(--light-color);
         }
         
         .form-control:focus, .form-select:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(139, 69, 19, 0.25);
+            background-color: var(--light-color);
+            color: var(--dark-color);
         }
         
         .stats-card {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
+            color: var(--dark-color);
             border-radius: 20px;
         }
         
@@ -160,6 +177,7 @@
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
+            color: var(--dark-color);
         }
         
         .fade-in {
@@ -180,11 +198,14 @@
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            color: #9ca3af;
+            color: #A0522D;
         }
         
         .search-box input {
             padding-left: 45px;
+            color: var(--dark-color);
+            background-color: var(--light-color);
+            border: 2px solid var(--border-color);
         }
     </style>
 </head>

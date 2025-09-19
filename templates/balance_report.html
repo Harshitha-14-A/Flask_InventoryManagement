@@ -163,9 +163,23 @@
 </div>
 
 <script>
-    searchTable('balanceSearch', 'balanceTable');
-    
-    document.getElementById('balanceFilter').addEventListener('change', function() {
+  document.addEventListener('DOMContentLoaded', function() {
+    const balanceSearch = document.getElementById("balanceSearch");
+    if (balanceSearch) {
+      balanceSearch.addEventListener("input", function () {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll("#balanceTable tbody tr");
+
+        rows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+          row.style.display = text.includes(filter) ? "" : "none";
+        });
+      });
+    }
+
+    const balanceFilter = document.getElementById('balanceFilter');
+    if (balanceFilter) {
+      balanceFilter.addEventListener('change', function() {
         const filter = this.value;
         const rows = document.querySelectorAll('#balanceTable tbody tr');
         
@@ -187,50 +201,52 @@
             
             row.style.display = show ? '' : 'none';
         });
-    });
-    
-    function exportReport() {
-        let csv = 'Product,Product ID,Warehouse,Location ID,Quantity,Status\n';
-        
-        document.querySelectorAll('#balanceTable tbody tr[data-balance]').forEach(row => {
-            const cells = row.querySelectorAll('td');
-            if (cells.length >= 4) {
-                const productName = cells[0].querySelector('.fw-medium').textContent;
-                const productId = cells[0].querySelector('.text-muted').textContent.replace('ID: ', '');
-                const locationName = cells[1].querySelector('.fw-medium').textContent;
-                const locationId = cells[1].querySelector('.text-muted').textContent.replace('ID: ', '');
-                const quantity = cells[2].querySelector('.fw-bold').textContent.trim();
-                const status = cells[3].querySelector('.badge').textContent.trim();
-                
-                csv += `"${productName}","${productId}","${locationName}","${locationId}","${quantity}","${status}"\n`;
-            }
-        });
-        
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'inventory_balance_report.csv';
-        a.click();
-        window.URL.revokeObjectURL(url);
+      });
     }
-    
-    function printReport() {
-        window.print();
-    }
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        const rows = document.querySelectorAll('#balanceTable tbody tr[data-balance]');
-        let positive = 0, negative = 0, total = 0;
-        
-        rows.forEach(row => {
-            const balance = parseFloat(row.getAttribute('data-balance'));
-            if (balance > 0) positive++;
-            else if (balance < 0) negative++;
-            total += Math.abs(balance);
-        });
-        
-    });
+  });
+
+  function exportReport() {
+      let csv = 'Product,Product ID,Warehouse,Location ID,Quantity,Status\n';
+      
+      document.querySelectorAll('#balanceTable tbody tr[data-balance]').forEach(row => {
+          const cells = row.querySelectorAll('td');
+          if (cells.length >= 4) {
+              const productName = cells[0].querySelector('.fw-medium').textContent;
+              const productId = cells[0].querySelector('.text-muted').textContent.replace('ID: ', '');
+              const locationName = cells[1].querySelector('.fw-medium').textContent;
+              const locationId = cells[1].querySelector('.text-muted').textContent.replace('ID: ', '');
+              const quantity = cells[2].querySelector('.fw-bold').textContent.trim();
+              const status = cells[3].querySelector('.badge').textContent.trim();
+              
+              csv += `"${productName}","${productId}","${locationName}","${locationId}","${quantity}","${status}"\n`;
+          }
+      });
+      
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'inventory_balance_report.csv';
+      a.click();
+      window.URL.revokeObjectURL(url);
+  }
+  
+  function printReport() {
+      window.print();
+  }
+  
+  document.addEventListener('DOMContentLoaded', function() {
+      const rows = document.querySelectorAll('#balanceTable tbody tr[data-balance]');
+      let positive = 0, negative = 0, total = 0;
+      
+      rows.forEach(row => {
+          const balance = parseFloat(row.getAttribute('data-balance'));
+          if (balance > 0) positive++;
+          else if (balance < 0) negative++;
+          total += Math.abs(balance);
+      });
+      
+  });
 </script>
 
 <style>

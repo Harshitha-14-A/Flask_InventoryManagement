@@ -118,7 +118,21 @@
 </div>
 
 <script>
-    searchTable('locationSearch', 'locationsTable');
+  document.addEventListener('DOMContentLoaded', function() {
+    const locationSearch = document.getElementById("locationSearch");
+    if (locationSearch) {
+      locationSearch.addEventListener("input", function () {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll("#locationsTable tbody tr");
+
+        rows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+          row.style.display = text.includes(filter) ? "" : "none";
+        });
+      });
+    }
+  });
+
     
     function deleteLocation(locationId, locationName) {
         document.getElementById('locationName').textContent = locationName;

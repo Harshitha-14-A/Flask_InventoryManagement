@@ -351,3 +351,5 @@ def register_routes(app):
             'location_name': location.name,
             'balance': balance
         }
+
+   
